@@ -10,7 +10,7 @@ namespace forms
 {
     public partial class Form1 : Form
     {
-        Dictionary<int, double> data = new Dictionary<int, double>();
+        bool flag;
         string path;
         public Form1()
         {
@@ -22,29 +22,10 @@ namespace forms
         {
             DrivesTreeView();
         }
-
-        private void fileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
-        {
-
-        }
-
         private void SelectBox(object sender, EventArgs e)
         {
             dialog_box dialogBox = new dialog_box(this);
             dialogBox.ShowDialog();
-        }
-        private void selectButton_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void fileMenu_Click(object sender, EventArgs e)
-        {
-
         }
         public void DriveTreeView(string drive)
         {
@@ -131,7 +112,6 @@ namespace forms
             treeView.Nodes.Add(node);
 
         }
-
         //https://stackoverflow.com/questions/35159549/how-to-display-all-files-under-folders-in-treeview
         private void treeView_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
@@ -223,7 +203,6 @@ namespace forms
                 }
             }
         }
-
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             TreeNode selectedNode = treeView.SelectedNode;
@@ -244,13 +223,18 @@ namespace forms
                     backgroundWorker.RunWorkerAsync();
                     DateTime lastModified = Directory.GetLastWriteTime(path);
                     detailsTextBox.Clear();
-                    detailsTextBox.AppendText($"Full path:\t{path}\r\n");
+                    detailsTextBox.AppendText($"Full path:\t\t{path}\r\n");
                     detailsTextBox.AppendText($"Last change:\t{lastModified}\r\n");
                 }
             }
         }
         private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            flag = false;
+            Chart.dataCount.Clear();
+            Chart.dataSize.Clear();
+            if (canvas.Image != null)
+                canvas.Image.Dispose();
             if (path == "<File>")
                 return;
             FileAttributes attr = File.GetAttributes(path);
@@ -263,7 +247,7 @@ namespace forms
                     long totalFiles = 0;
                     long totalFolders = 0;
                     long n = Directory.GetDirectories(path).Length;
-
+                    long z = 0;
                     // Wywo³anie metody CountFilesAndFolders, która zwraca liczbê plików i folderów oraz ich rozmiar
                     CountFilesAndFolders(path, ref totalSize, ref totalFiles, ref totalFolders, n, e, 0);
 
@@ -282,7 +266,6 @@ namespace forms
             }
 
         }
-
         private void CountFilesAndFolders(string path, ref long totalSize, ref long totalFiles, ref long totalFolders, long n, DoWorkEventArgs e, int level)
         {
             int z = 0;
@@ -291,19 +274,18 @@ namespace forms
                 foreach (string dir in Directory.GetDirectories(path))
                 {
                     // Rekurencyjne wywo³anie metody dla ka¿dego podfolderu
+                    CountFilesAndFolders(dir, ref totalSize, ref totalFiles, ref totalFolders, n, e, level + 1);
                     if (backgroundWorker.CancellationPending)
                     {
                         e.Cancel = true;
                         return;
                     }
-                    CountFilesAndFolders(dir, ref totalSize, ref totalFiles, ref totalFolders, n, e, level + 1);
                     totalFolders++;
                     ++z;
                     if (level == 0)
                     {
                         int progress = (int)((float)z / (float)n) * 100;
-                        this.Invoke((MethodInvoker)delegate { backgroundWorker.ReportProgress((int)(progress)); });
-                        Thread.Sleep(100);
+                        backgroundWorker.ReportProgress(progress);
                     }
                 }
 
@@ -316,6 +298,17 @@ namespace forms
                     }
                     // Zliczenie rozmiaru ka¿dego pliku i zwiêkszenie licznika plików
                     FileInfo fileInfo = new FileInfo(file);
+                    if (Chart.dataCount.ContainsKey(fileInfo.Extension))
+                    {
+                        Chart.dataCount[fileInfo.Extension] += 1;
+                        Chart.dataSize[fileInfo.Extension] += (int)fileInfo.Length;
+                    }
+                    else
+                    {
+                        Chart.dataCount[fileInfo.Extension] = 1;
+                        Chart.dataSize[fileInfo.Extension] = (int)fileInfo.Length;
+                    }
+
                     totalSize += fileInfo.Length;
                     totalFiles++;
                 }
@@ -326,12 +319,12 @@ namespace forms
                 //Console.WriteLine(ex.Message);
             }
         }
-
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             // Wyœwietlenie wyników
             if (!e.Cancelled)
             {
+                flag = true;
                 if (path == "Access denied!")
                 {
                     detailsTextBox.Clear();
@@ -350,12 +343,13 @@ namespace forms
                     long[] results = (long[])e.Result;
                     DateTime lastModified = Directory.GetLastWriteTime(path);
                     double size = Math.Round((double)results[2] / (double)1000000, 1);
-                    detailsTextBox.AppendText($"Full path:\t{path}\r\n");
-                    detailsTextBox.AppendText($"Size:\t{size} MB\r\n");
-                    detailsTextBox.AppendText($"Items:\t{results[0] + results[1]}\r\n");
-                    detailsTextBox.AppendText($"Files:\t{results[0]}\r\n");
-                    detailsTextBox.AppendText($"Subdirs:\t{results[1]}\r\n");
+                    detailsTextBox.AppendText($"Full path:\t\t{path}\r\n");
+                    detailsTextBox.AppendText($"Size:\t\t{size} MB\r\n");
+                    detailsTextBox.AppendText($"Items:\t\t{results[0] + results[1]}\r\n");
+                    detailsTextBox.AppendText($"Files:\t\t{results[0]}\r\n");
+                    detailsTextBox.AppendText($"Subdirs:\t\t{results[1]}\r\n");
                     detailsTextBox.AppendText($"Last change:\t{lastModified}\r\n");
+                    this.Refresh();
                 }
                 else
                 {
@@ -363,8 +357,8 @@ namespace forms
                     DateTime lastModified = File.GetLastWriteTime(path);
                     long[] results = (long[])e.Result;
                     double size = Math.Round((double)results[0] / (double)1000000, 1);
-                    detailsTextBox.AppendText($"Full path:\t{path}\r\n");
-                    detailsTextBox.AppendText($"Size:\t{size} MB\r\n");
+                    detailsTextBox.AppendText($"Full path:\t\t{path}\r\n");
+                    detailsTextBox.AppendText($"Size:\t\t{size} MB\r\n");
                     detailsTextBox.AppendText($"Last change:\t{lastModified}\r\n");
                 }
             }
@@ -374,15 +368,33 @@ namespace forms
             // Aktualizacja paska postêpu w interfejsie u¿ytkownika
             progressBar.Value = e.ProgressPercentage;
         }
-
-        private void statusStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-
-        }
-
         private void exitMenu_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+        private void canvas_Paint(object sender, PaintEventArgs e)
+        {
+            int selectedIndex = chartTypeBox.SelectedIndex;
+            if (selectedIndex == 0)
+            {
+                Chart.DrawBarCharts(e.Graphics, canvas.Width, canvas.Height);
+            }
+            else if (selectedIndex==1)
+            {
+                Chart.DrawBarChartsLog(e.Graphics,canvas.Width, canvas.Height);
+            }
+        }
+        private void chartTypeBox_SelectedValueChanged(object sender, EventArgs e)
+        {
+            while (!flag)
+                Application.DoEvents();
+            this.Refresh();
+        }
+
+        private void cancelMenu_Click(object sender, EventArgs e)
+        {
+            if (backgroundWorker.IsBusy)
+                backgroundWorker.CancelAsync();
         }
     }
 }

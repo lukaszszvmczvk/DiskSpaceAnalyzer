@@ -58,7 +58,7 @@
             allLocalDrivesRadio.Size = new Size(132, 24);
             allLocalDrivesRadio.TabIndex = 0;
             allLocalDrivesRadio.TabStop = true;
-            allLocalDrivesRadio.Text = "All Local Drives";
+            allLocalDrivesRadio.Text = "&All Local Drives";
             allLocalDrivesRadio.UseVisualStyleBackColor = true;
             // 
             // individualDrivesRadio
@@ -71,7 +71,7 @@
             individualDrivesRadio.Size = new Size(140, 24);
             individualDrivesRadio.TabIndex = 1;
             individualDrivesRadio.TabStop = true;
-            individualDrivesRadio.Text = "Individual Drives";
+            individualDrivesRadio.Text = "&Individual Drives";
             individualDrivesRadio.UseVisualStyleBackColor = true;
             // 
             // aFolderRadio
@@ -84,7 +84,7 @@
             aFolderRadio.Size = new Size(86, 24);
             aFolderRadio.TabIndex = 2;
             aFolderRadio.TabStop = true;
-            aFolderRadio.Text = "A Folder";
+            aFolderRadio.Text = "A &Folder";
             aFolderRadio.UseVisualStyleBackColor = true;
             // 
             // folderTextBox
@@ -141,6 +141,7 @@
             // 
             listView1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             listView1.Columns.AddRange(new ColumnHeader[] { columnName, columnTotal, columnFree, columnused, columnUsedBar });
+            listView1.FullRowSelect = true;
             listView1.Location = new Point(32, 101);
             listView1.Margin = new Padding(3, 4, 3, 4);
             listView1.Name = "listView1";

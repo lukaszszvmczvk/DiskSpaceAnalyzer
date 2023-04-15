@@ -63,12 +63,12 @@ namespace forms
             }
             else if (individualDrivesRadio.Checked)
             {
-                if(!(listView1.SelectedItems.Count==0))
+                if (!(listView1.SelectedItems.Count == 0))
                 {
                     string drv = listView1.SelectedItems[0].Text;
                     parent.DriveTreeView(drv);
                 }
-                    this.Close();
+                this.Close();
             }
             else if (aFolderRadio.Checked)
             {
@@ -106,6 +106,8 @@ namespace forms
                 int fillWidth = (int)Math.Round((double)progress / 100 * progressBarWidth);
                 e.Graphics.FillRectangle(brush2, progressBarX, progressBarY, progressBarWidth, progressBarHeight);
                 e.Graphics.FillRectangle(brush, progressBarX, progressBarY, fillWidth, progressBarHeight);
+                brush.Dispose();
+                brush2.Dispose();
             }
             else
             {

@@ -43,6 +43,9 @@
             tabPage1 = new TabPage();
             detailsTextBox = new TextBox();
             tabPage2 = new TabPage();
+            canvas = new PictureBox();
+            chartTypeBox = new ComboBox();
+            chartTypeLabel = new Label();
             statusStrip1 = new StatusStrip();
             progressBar = new ToolStripProgressBar();
             backgroundWorker = new System.ComponentModel.BackgroundWorker();
@@ -54,6 +57,8 @@
             splitContainer1.SuspendLayout();
             tabControl.SuspendLayout();
             tabPage1.SuspendLayout();
+            tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)canvas).BeginInit();
             statusStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -75,29 +80,28 @@
             fileMenu.ShortcutKeys = Keys.Alt | Keys.F4;
             fileMenu.Size = new Size(46, 24);
             fileMenu.Text = "File";
-            fileMenu.Click += fileMenu_Click;
             // 
             // selectMenu
             // 
             selectMenu.Name = "selectMenu";
             selectMenu.ShortcutKeys = Keys.Control | Keys.S;
-            selectMenu.Size = new Size(186, 26);
+            selectMenu.Size = new Size(224, 26);
             selectMenu.Text = "Select";
             selectMenu.Click += SelectBox;
             // 
             // cancelMenu
             // 
-            cancelMenu.Enabled = false;
             cancelMenu.Name = "cancelMenu";
             cancelMenu.ShortcutKeys = Keys.Control | Keys.T;
-            cancelMenu.Size = new Size(186, 26);
+            cancelMenu.Size = new Size(224, 26);
             cancelMenu.Text = "Cancel";
+            cancelMenu.Click += cancelMenu_Click;
             // 
             // exitMenu
             // 
             exitMenu.Name = "exitMenu";
             exitMenu.ShortcutKeys = Keys.Alt | Keys.F4;
-            exitMenu.Size = new Size(186, 26);
+            exitMenu.Size = new Size(224, 26);
             exitMenu.Text = "Exit";
             exitMenu.Click += exitMenu_Click;
             // 
@@ -207,6 +211,9 @@
             // 
             // tabPage2
             // 
+            tabPage2.Controls.Add(canvas);
+            tabPage2.Controls.Add(chartTypeBox);
+            tabPage2.Controls.Add(chartTypeLabel);
             tabPage2.Location = new Point(4, 29);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
@@ -214,6 +221,35 @@
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Charts";
             tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // canvas
+            // 
+            canvas.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            canvas.Location = new Point(6, 51);
+            canvas.Name = "canvas";
+            canvas.Size = new Size(582, 442);
+            canvas.TabIndex = 2;
+            canvas.TabStop = false;
+            canvas.Paint += canvas_Paint;
+            // 
+            // chartTypeBox
+            // 
+            chartTypeBox.FormattingEnabled = true;
+            chartTypeBox.Items.AddRange(new object[] { "Bar chart", "Log bar chart", "Pie chart" });
+            chartTypeBox.Location = new Point(102, 17);
+            chartTypeBox.Name = "chartTypeBox";
+            chartTypeBox.Size = new Size(151, 28);
+            chartTypeBox.TabIndex = 1;
+            chartTypeBox.SelectedValueChanged += chartTypeBox_SelectedValueChanged;
+            // 
+            // chartTypeLabel
+            // 
+            chartTypeLabel.AutoSize = true;
+            chartTypeLabel.Location = new Point(16, 20);
+            chartTypeLabel.Name = "chartTypeLabel";
+            chartTypeLabel.Size = new Size(80, 20);
+            chartTypeLabel.TabIndex = 0;
+            chartTypeLabel.Text = "Chart type:";
             // 
             // statusStrip1
             // 
@@ -225,7 +261,6 @@
             statusStrip1.Size = new Size(914, 24);
             statusStrip1.TabIndex = 1;
             statusStrip1.Text = "statusStrip1";
-            statusStrip1.ItemClicked += statusStrip1_ItemClicked;
             // 
             // progressBar
             // 
@@ -266,6 +301,9 @@
             tabControl.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             tabPage1.PerformLayout();
+            tabPage2.ResumeLayout(false);
+            tabPage2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)canvas).EndInit();
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
             ResumeLayout(false);
@@ -292,5 +330,8 @@
         private TextBox detailsTextBox;
         private System.ComponentModel.BackgroundWorker backgroundWorker;
         private ToolStripProgressBar progressBar;
+        private Label chartTypeLabel;
+        private ComboBox chartTypeBox;
+        private PictureBox canvas;
     }
 }
